@@ -6,26 +6,17 @@ import java.util.Map;
 public class GermanTranslator implements Translator {
 	HashMap<Integer, String> hm = new HashMap<Integer, String>();
 
+	String[] s = {"eins", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn"};
+
 	public String date = "Okt/2023"; // Default-Wert
 
 	/**
 	 * Methode zur Übersetzung einer Zahl in eine String-Repraesentation
 	 */
 	public String translateNumber( int number ) {
-		String s;
-		hm.put(1, "eins");
-		hm.put(2, "zwei");
-		hm.put(3, "drei");
-		hm.put(4, "vier");
-		hm.put(5, "fünf");
-		hm.put(6, "sechs");
-		hm.put(7, "sieben");
-		hm.put(8, "acht");
-		hm.put(9, "neun");
-		hm.put(10, "zehn");
-		if (hm.containsKey(number)) {
-			return  hm.get(number);
-		} else {
+		try {
+			return s[number-1];
+		} catch (Exception e) {
 			return "Übersetzung der Zahl " + number + " nicht möglich " + Translator.version;
 		}
 	}

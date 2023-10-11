@@ -41,6 +41,8 @@ class GermanTranslatorTest {
         assertEquals("Übersetzung der Zahl " + 0 + " nicht möglich " + Translator.version, value);
         value = translator.translateNumber(11);
         assertEquals("Übersetzung der Zahl " + 11 + " nicht möglich " + Translator.version, value);
+        value = translator.translateNumber(-1);
+        assertEquals("Übersetzung der Zahl " + -1 + " nicht möglich " + Translator.version, value);
     }
 
     @Test
