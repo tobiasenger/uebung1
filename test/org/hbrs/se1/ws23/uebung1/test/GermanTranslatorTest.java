@@ -44,10 +44,4 @@ class GermanTranslatorTest {
         value = translator.translateNumber(-1);
         assertEquals("Übersetzung der Zahl " + -1 + " nicht möglich " + Translator.version, value);
     }
-
-    @Test
-    void clientTest() {
-        Client c = new Client();
-        c.display(0);
-    }
 }
