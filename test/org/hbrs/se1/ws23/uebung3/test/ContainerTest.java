@@ -1,11 +1,14 @@
-package org.hbrs.se1.ws23.uebung2.test;
-
-import org.hbrs.se1.ws23.uebung2.ConcreteMember;
-import org.hbrs.se1.ws23.uebung2.Container;
-import org.hbrs.se1.ws23.uebung2.ContainerException;
-import org.hbrs.se1.ws23.uebung2.Member;
+package org.hbrs.se1.ws23.uebung3.test;
+import org.hbrs.se1.ws23.uebung3.control.ConcreteMember;
+import org.hbrs.se1.ws23.uebung3.control.Container;
+import org.hbrs.se1.ws23.uebung3.control.ContainerException;
+import org.hbrs.se1.ws23.uebung3.control.Member;
+import org.hbrs.se1.ws23.uebung3.view.MemberView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ContainerTest {
@@ -18,7 +21,7 @@ public class ContainerTest {
 
     @BeforeEach
     public void setUp() {
-        container = new Container();
+        container = Container.getInstance();
         member_1 = new ConcreteMember(3);
         member_2 = new ConcreteMember(8);
         member_3 = new ConcreteMember(11);
@@ -115,7 +118,7 @@ public class ContainerTest {
             System.out.println("Hinzufügen vor eigentlichem Test fehlgeschlagen!");
         }
         assertEquals(2, container.size());
-        container.dump();
+        MemberView.dump(new ArrayList<>());
         assertEquals(2, container.size());
     }
 
