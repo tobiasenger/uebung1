@@ -3,7 +3,11 @@ import org.hbrs.se1.ws23.uebung3.control.ConcreteMember;
 import org.hbrs.se1.ws23.uebung3.control.Container;
 import org.hbrs.se1.ws23.uebung3.control.ContainerException;
 import org.hbrs.se1.ws23.uebung3.control.Member;
+import org.hbrs.se1.ws23.uebung3.persistence.PersistenceException;
+import org.hbrs.se1.ws23.uebung3.persistence.PersistenceStrategyMongoDB;
+import org.hbrs.se1.ws23.uebung3.persistence.PersistenceStrategyStream;
 import org.hbrs.se1.ws23.uebung3.view.MemberView;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -22,10 +26,22 @@ public class ContainerTest {
     @BeforeEach
     public void setUp() {
         container = Container.getInstance();
-        member_1 = new ConcreteMember(3);
-        member_2 = new ConcreteMember(8);
-        member_3 = new ConcreteMember(11);
-        member_4 = new ConcreteMember(3);
+        member_1 = new ConcreteMember(1);
+        member_2 = new ConcreteMember(2);
+        member_3 = new ConcreteMember(3);
+        member_4 = new ConcreteMember(1);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        try {
+            container.deleteMember(1);
+            container.deleteMember(2);
+            container.deleteMember(3);
+            container.setPersistence_strategy(null);
+        } catch (Exception e) {
+            System.out.println("Fehler beim Teardown aufgetreten.");
+        }
     }
 
     @Test
@@ -92,7 +108,7 @@ public class ContainerTest {
             System.out.println("Hinzufügen vor eigentlichem Test fehlgeschlagen!");
         }
         assertEquals(1, container.size());
-        container.deleteMember(3);
+        container.deleteMember(1);
         assertEquals(0, container.size());
     }
 
@@ -105,7 +121,7 @@ public class ContainerTest {
             System.out.println("Hinzufügen vor eigentlichem Test fehlgeschlagen!");
         }
         assertEquals(2, container.size());
-        container.deleteMember(3);
+        container.deleteMember(2);
         assertEquals(1, container.size());
     }
 
@@ -159,5 +175,52 @@ public class ContainerTest {
         assertEquals(2, container.size());
         container.deleteMember(null);
         assertEquals(2, container.size());
+    }
+
+    @Test
+    public void testNoStrategySet() {
+        assertThrows(PersistenceException.class, () -> container.store());
+    }
+
+    @Test
+    public void testUnimplementedStrategy() {
+        container.setPersistence_strategy(new PersistenceStrategyMongoDB<>());
+        assertThrows(PersistenceException.class, () -> container.store());
+    }
+
+    @Test
+    public void testWrongFileLocation() {
+        PersistenceStrategyStream<Member> ps = new PersistenceStrategyStream<>();
+        ps.setLocation("/");
+        container.setPersistence_strategy(ps);
+        assertThrows(PersistenceException.class, () -> container.store());
+    }
+
+    @Test
+    public void testRoundTrip() {
+        container.setPersistence_strategy(new PersistenceStrategyStream<>());
+        try {
+            assertEquals(0, container.size());
+            container.addMember(member_1);
+            assertEquals(1, container.size());
+            container.addMember(member_2);
+            assertEquals(2, container.size());
+            container.store();
+        } catch (ContainerException e) {
+            System.out.println("Fehler beim Testablauf.");
+        } catch (PersistenceException p) {
+            System.out.println("Fehler beim Abspeichern.");
+        }
+        try {
+            assertEquals(2, container.size());
+            container.deleteMember(1);
+            assertEquals(1, container.size());
+            container.deleteMember(2);
+            assertEquals(0, container.size());
+            container.load();
+            assertEquals(2, container.size());
+        } catch (PersistenceException p) {
+            System.out.println("Fehler beim Abspeichern.");
+        }
     }
 }

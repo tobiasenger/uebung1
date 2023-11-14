@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.sort;
+
 /*
  * Klasse zum Management sowie zur Eingabe unnd Ausgabe von User-Stories.
  * Die Anwendung wird über dies Klasse auch gestartet (main-Methode hier vorhanden)
@@ -45,7 +47,7 @@ public class Container {
 	private static Container instance = new Container();
 	
 	// URL der Datei, in der die Objekte gespeichert werden 
-	final static String LOCATION = "allStories.ser";
+	final static String LOCATION = "src/org/hbrs/se1/ws23/uebung4/prototype/allStories.ser";
 
 	/**
 	 * Liefert ein Singleton zurück.
@@ -57,9 +59,9 @@ public class Container {
 	
 	/**
 	 * Vorschriftsmäßiges Ueberschreiben des Konstruktors (private) gemaess Singleton-Pattern (oder?)
-	 * Nun auf private gesetzt! Vorher ohne Access Qualifier (--> dann package-private)
+	 * nun auf private gesetzt! Vorher ohne Access Qualifier (--> dann package-private)
 	 */
-	Container(){
+	private Container(){
 		liste = new ArrayList<UserStory>();
 	}
 	
@@ -85,11 +87,10 @@ public class Container {
 		// ToDo: Funktionsweise des Scanners erklären (F3)
 		Scanner scanner = new Scanner( System.in );
 
+		System.out.println("\nUserStory-Tool V1.0 by Julius P. (dedicated to all my friends)");
 		while ( true ) {
 			// Ausgabe eines Texts zur Begruessung
-			System.out.println("UserStory-Tool V1.0 by Julius P. (dedicated to all my friends)");
-
-			System.out.print( "> "  );
+			System.out.print( "\n> "  );
 
 			strInput = scanner.nextLine();
 		
@@ -98,7 +99,13 @@ public class Container {
 
 			// 	Falls 'help' eingegeben wurde, werden alle Befehle ausgedruckt
 			if ( strings[0].equals("help") ) {
-				System.out.println("Folgende Befehle stehen zur Verfuegung: help, dump....");
+				System.out.println("Folgende Befehle stehen zur Verfuegung:\n");
+				System.out.println("enter:\tEingabe einer User Story");
+				System.out.println("store:\tAbspeichern der User Stories");
+				System.out.println("load:\tLaden von User Stories");
+				System.out.println("dump:\tSortierte Ausgabe der User Stories");
+				System.out.println("search:\tSuche nach User Stories nach Projekten");
+				System.out.println("exit:\tVerlassen der Anwendung\n");
 			}
 			// Auswahl der bisher implementierten Befehle:
 			if ( strings[0].equals("dump") ) {
@@ -106,18 +113,96 @@ public class Container {
 			}
 			// Auswahl der bisher implementierten Befehle:
 			if ( strings[0].equals("enter") ) {
-				// Daten einlesen ...
-				// this.addUserStory( new UserStory( data ) ) um das Objekt in die Liste einzufügen.
+				UserStory userStory = null;
+				try {
+					userStory = parameterEinlesen();
+				} catch (NumberFormatException nfe) {
+					System.out.println("\nUngültiges Eingabeformat, bitte versuchen Sie es erneut.\nGeben Sie für die ID," +
+							" Mehrwert, Strafe, Aufwand und\nRisiko nur ganzzahlige Werte ein.\n\nFür alle anderen Eingaben " +
+							"können Sie einen beliebigen\nFreitext wählen.\n");
+				}
+				if(userStory != null) {
+					while(contains(userStory)) {
+						System.out.println("\nEine User Story mit dieser ID existiert bereits.\n" +
+								"Bitte geben Sie für Ihre User Story eine andere ID ein!\n");
+						System.out.print( "> "  );
+						userStory.setId(new Scanner(System.in).nextInt());
+					}
+					try {
+						addUserStory(userStory);
+					} catch (ContainerException ce) {
+						System.out.println("\nSpeichervorgang Fehlgeschlagen!");
+					}
+				}
 			}
 								
 			if (  strings[0].equals("store")  ) {
-				// Beispiel-Code
-				UserStory userStory = new UserStory();
-				userStory.setId(22);
-				this.addUserStory( userStory );
 				this.store();
 			}
+
+			if (  strings[0].equals("load")  ) {
+				load();
+			}
+
+			if (  strings[0].equals("search")  ) {
+				System.out.println("Bitte Suchbegriff eingeben.");
+				System.out.print( "> "  );
+				String suchbegriff = new Scanner(System.in).next();
+				search(suchbegriff);
+			}
+
+			if (  strings[0].equals("exit")  ) {
+				break;
+			}
 		} // Ende der Schleife
+	}
+
+	private void search(String suchbegriff) {
+		ArrayList<UserStory> projektStories = new ArrayList<>();
+		for(UserStory userStory: liste) {
+			if (userStory.getProject().contains(suchbegriff)) {
+				projektStories.add(userStory);
+			}
+		}
+		sort(projektStories);
+		for (UserStory projektStory : projektStories) {
+			System.out.println(projektStory.toString());
+		}
+	}
+
+	private UserStory parameterEinlesen() throws ContainerException {
+		System.out.println("Für welches Projekt möchten Sie eine User Story erstellen?");
+		System.out.print( "> "  );
+		String projekt = new Scanner(System.in).nextLine();
+		System.out.println("Bitte geben Sie die ID ein.");
+		System.out.print( "> "  );
+		int id = new Scanner(System.in).nextInt();
+		System.out.println("Bitte geben Sie den Titel der User Story ein.");
+		System.out.print( "> "  );
+		String titel = new Scanner(System.in).nextLine();
+		System.out.println("Bitte geben Sie eine kurze Beschreibung ein.");
+		System.out.print( "> "  );
+		String beschreibung = new Scanner(System.in).nextLine();
+		System.out.println("Bitte geben Sie ein Akzeptanzkriterium ein.");
+		System.out.print( "> "  );
+		String akzeptanz = new Scanner(System.in).nextLine();
+		System.out.println("Bitte geben Sie den Mehrwert ein.");
+		System.out.print( "> "  );
+		int mehrwert = new Scanner(System.in).nextInt();
+		System.out.println("Bitte geben Sie die Strafe ein.");
+		System.out.print( "> "  );
+		int strafe = new Scanner(System.in).nextInt();
+		System.out.println("Bitte geben Sie den Aufwand ein.");
+		System.out.print( "> "  );
+		int aufwand = new Scanner(System.in).nextInt();
+		System.out.println("Bitte geben Sie das Risiko ein.");
+		System.out.print( "> "  );
+		int risiko = new Scanner(System.in).nextInt();
+		double prio = (double)(mehrwert + strafe) / (aufwand + risiko);
+		UserStory userStory = new UserStory(id, titel, beschreibung, akzeptanz, mehrwert, strafe,
+				aufwand, risiko, prio);
+		userStory.setProject(projekt);
+		return userStory;
 	}
 
 	/**
@@ -130,6 +215,7 @@ public class Container {
 
 		// [Sortierung ausgelassen]
 		// Todo: Implementierung Sortierung (F4)
+		sort(liste);
 
 		// Klassische Ausgabe ueber eine For-Each-Schleife
 		for (UserStory story : liste) {
@@ -154,7 +240,7 @@ public class Container {
 		try {
 			fos = new FileOutputStream( Container.LOCATION );
 			oos = new ObjectOutputStream(fos);
-			
+
 			oos.writeObject( this.liste );
 			System.out.println( this.size() + " UserStory wurden erfolgreich gespeichert!");
 		}
@@ -203,7 +289,7 @@ public class Container {
 	 * @throws ContainerException
 	 */
 	public void addUserStory ( UserStory userStory ) throws ContainerException {
-		if ( contains(userStory) == true ) {
+		if ( contains(userStory)) {
 			ContainerException ex = new ContainerException("ID bereits vorhanden!");
 			throw ex;
 		}
@@ -256,4 +342,5 @@ public class Container {
 		}
 		return null;
 	}
+
 }

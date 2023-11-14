@@ -2,17 +2,13 @@ package org.hbrs.se1.ws23.uebung3.persistence;
 
 import org.hbrs.se1.ws23.uebung2.Member;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.List;
 
 public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
 
     // URL of file, in which the objects are stored
     private String location = "src/org/hbrs/se1/ws23/uebung3/persistence/PersistenceFile.txt";
-
     private ObjectOutputStream oos;
     private FileOutputStream fos;
     private ObjectInputStream ois;
@@ -46,7 +42,7 @@ public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
             if (fos!= null) fos.close();
             if (ois != null) ois.close();
             if (fis != null) fis.close();
-        } catch (Exception e) {
+        } catch (java.io.IOException e) {
             throw new PersistenceException(PersistenceException.ExceptionType.ConnectionNotClosable, "Verbindung konnte nicht geschlossen werden.");
         }
     }
@@ -59,12 +55,12 @@ public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
         try {
             fos = new FileOutputStream(location);
             oos = new ObjectOutputStream(fos);
-        } catch (Exception e) {
+        } catch (java.io.IOException e) {
             throw new PersistenceException(PersistenceException.ExceptionType.ConnectionNotAvailable, "Verbindung konnte nicht hergestellt werden.");
         }
         try {
             oos.writeObject(member);
-        } catch (Exception e) {
+        } catch (java.io.IOException e) {
             throw new PersistenceException(PersistenceException.ExceptionType.SavingError, "Speichern konnte nicht abgeschlossen werden.");
         }
     }
@@ -99,7 +95,7 @@ public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
         try {
             fis = new FileInputStream(location);
             ois = new ObjectInputStream(fis);
-        } catch (Exception e) {
+        } catch (java.io.IOException e) {
             throw new PersistenceException(PersistenceException.ExceptionType.ConnectionNotAvailable, "Verbindung konnte nicht hergestellt werden.");
         }
         try {
@@ -107,7 +103,7 @@ public class PersistenceStrategyStream<E> implements PersistenceStrategy<E> {
             if (obj instanceof List<?>) {
                 newListe = (List) obj;
             }
-        } catch (Exception e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new PersistenceException(PersistenceException.ExceptionType.WrongFiletype, "Fehler beim Speichern.");
         }
         return newListe;

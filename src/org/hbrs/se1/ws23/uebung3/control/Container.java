@@ -11,11 +11,11 @@ import java.util.List;
 public class Container {
 
     private static volatile Container instance;
-    private static ArrayList<Member> list_of_members = null;
-    private static PersistenceStrategy<Member> persistence_strategy = null;
+    private ArrayList<Member> list_of_members = null;
+    private PersistenceStrategy<Member> persistence_strategy = null;
 
     private Container(ArrayList<Member> list_of_members) {
-        Container.list_of_members = list_of_members;
+        this.list_of_members = list_of_members;
     }
 
     public static Container getInstance() {
@@ -24,8 +24,7 @@ public class Container {
             synchronized (Container.class) {
                 result = instance;
                 if(result == null) {
-                    list_of_members = new ArrayList<Member>();
-                    instance = result = new Container(list_of_members);
+                    instance = result = new Container(new ArrayList<>());
                 }
             }
         }
@@ -48,7 +47,7 @@ public class Container {
     public String deleteMember(Integer id) {
 
         for(Member member_in_list: list_of_members) {
-            if(member_in_list.getID() == id) {
+            if(member_in_list.getID().equals(id)) {
                 list_of_members.remove(member_in_list);
                 return "Member gelöscht";
             }
@@ -57,15 +56,27 @@ public class Container {
     }
 
     public void store() throws PersistenceException {
-        persistence_strategy.openConnection();
-        persistence_strategy.save(list_of_members);
-        persistence_strategy.closeConnection();
+        try {
+            persistence_strategy.openConnection();
+            persistence_strategy.save(list_of_members);
+            persistence_strategy.closeConnection();
+        } catch (NullPointerException n) {
+            throw new PersistenceException(PersistenceException.ExceptionType.NoStrategyIsSet, "Keine Strategie gesetzt.");
+        } catch (UnsupportedOperationException u) {
+            throw new PersistenceException(PersistenceException.ExceptionType.ImplementationNotAvailable, "Strategie nicht implementiert.");
+        }
     }
 
     public void load() throws PersistenceException {
-        persistence_strategy.openConnection();
-        list_of_members = (ArrayList) persistence_strategy.load();
-        persistence_strategy.closeConnection();
+        try {
+            persistence_strategy.openConnection();
+            list_of_members = (ArrayList<Member>) persistence_strategy.load();
+            persistence_strategy.closeConnection();
+        } catch (NullPointerException n) {
+            throw new PersistenceException(PersistenceException.ExceptionType.NoStrategyIsSet, "Keine Strategie gesetzt.");
+        } catch (UnsupportedOperationException u) {
+            throw new PersistenceException(PersistenceException.ExceptionType.ImplementationNotAvailable, "Strategie nicht implementiert.");
+        }
     }
 
     public void setPersistence_strategy(PersistenceStrategy<Member> new_persistence_strategy) {
@@ -80,9 +91,9 @@ public class Container {
         public static void main(String[] args) {
             Container demo = getInstance();
             demo.setPersistence_strategy(new PersistenceStrategyStream<>());
-            Member member1 = new ConcreteMember(1);
-            Member member2 = new ConcreteMember(2);
-            Member member3 = new ConcreteMember(3);
+            Member member1 = new ConcreteMember(5);
+            Member member2 = new ConcreteMember(3);
+            Member member3 = new ConcreteMember(7);
             try {
                 demo.addMember(member1);
                 demo.addMember(member2);

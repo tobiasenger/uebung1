@@ -19,9 +19,9 @@ public class Container {
 	// Interne ArrayList zur Abspeicherung der Objekte
 	private List<Member> liste = null;
 
-	//Statische Klassen-Variable, um die Referenz
-	//auf das einzige Container-Objekt abzuspeichern
-	// Dynamische Belegung: nur falls Methode getInstance geladen
+	// Statische Klassen-Variable, um die Referenz
+	// auf das einzige Container-Objekt abzuspeichern
+	// dynamische Belegung: nur falls Methode getInstance geladen
 	// wird, dann wird nach Bedarf die Variable mit einer Referenz gefüllt
 	private static Container instance = null; // = new Container();
 
