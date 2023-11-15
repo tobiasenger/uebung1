@@ -45,9 +45,11 @@ public class Container {
 	// Nachteil: ggf. geringer Speicherbedarf, da Singleton zu Programmstart schon erzeugt wird
 	// Todo: Bewertung Speicherbedarf (F1)
 	private static Container instance = new Container();
-	
+
 	// URL der Datei, in der die Objekte gespeichert werden 
 	final static String LOCATION = "src/org/hbrs/se1/ws23/uebung4/prototype/allStories.ser";
+
+	private List<Integer> scrumNumbers = Arrays.asList(0,1,2,3,5,8,13,20,40,100);
 
 	/**
 	 * Liefert ein Singleton zurück.
@@ -120,6 +122,8 @@ public class Container {
 					System.out.println("\nUngültiges Eingabeformat, bitte versuchen Sie es erneut.\nGeben Sie für die ID," +
 							" Mehrwert, Strafe, Aufwand und\nRisiko nur ganzzahlige Werte ein.\n\nFür alle anderen Eingaben " +
 							"können Sie einen beliebigen\nFreitext wählen.\n");
+				} catch (ContainerException ce) {
+					System.out.println(ce.getMessage());
 				}
 				if(userStory != null) {
 					while(contains(userStory)) {
@@ -189,15 +193,27 @@ public class Container {
 		System.out.println("Bitte geben Sie den Mehrwert ein.");
 		System.out.print( "> "  );
 		int mehrwert = new Scanner(System.in).nextInt();
+		if (mehrwert > 5 || mehrwert < 1) {
+			throw new ContainerException("Der Wert muss zwischen 1 und 5 liegen.");
+		}
 		System.out.println("Bitte geben Sie die Strafe ein.");
 		System.out.print( "> "  );
 		int strafe = new Scanner(System.in).nextInt();
+		if (strafe > 5 || strafe < 1) {
+			throw new ContainerException("Der Wert muss zwischen 1 und 5 liegen.");
+		}
 		System.out.println("Bitte geben Sie den Aufwand ein.");
 		System.out.print( "> "  );
 		int aufwand = new Scanner(System.in).nextInt();
+		if (!scrumNumbers.contains(aufwand)) {
+			throw new ContainerException("Der Wert muss 0, 1, 2, 3, 5, 8, 13, 20, 40 oder 100 sein.");
+		}
 		System.out.println("Bitte geben Sie das Risiko ein.");
 		System.out.print( "> "  );
 		int risiko = new Scanner(System.in).nextInt();
+		if (risiko > 5 || risiko < 1) {
+			throw new ContainerException("Der Wert muss zwischen 1 und 5 liegen.");
+		}
 		double prio = (double)(mehrwert + strafe) / (aufwand + risiko);
 		UserStory userStory = new UserStory(id, titel, beschreibung, akzeptanz, mehrwert, strafe,
 				aufwand, risiko, prio);
