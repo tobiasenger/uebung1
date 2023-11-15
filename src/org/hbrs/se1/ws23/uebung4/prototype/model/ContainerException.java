@@ -1,4 +1,4 @@
-package org.hbrs.se1.ws23.uebung4.prototype;
+package org.hbrs.se1.ws23.uebung4.prototype.model;
 
 public class ContainerException extends Exception {
 	
@@ -9,9 +9,6 @@ public class ContainerException extends Exception {
 		super ( s );
 	}
 
-	/**
-	 * Einfaches Exception-Handling. Orientierung an die Lösung Übungsaufgabe Nr. 3-2 besser...
-	 */
 	@Override
 	public void printStackTrace() {
 		if (this.id  != null) {

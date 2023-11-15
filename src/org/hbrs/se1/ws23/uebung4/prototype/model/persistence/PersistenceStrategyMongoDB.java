@@ -1,4 +1,4 @@
-package org.hbrs.se1.ws23.uebung4.prototype.persistence;
+package org.hbrs.se1.ws23.uebung4.prototype.model.persistence;
 
 import java.util.List;
 
