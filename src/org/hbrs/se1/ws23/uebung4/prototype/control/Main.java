@@ -8,7 +8,7 @@ public class Main {
         try {
             InputDialog.startEingabe();
         } catch (Exception e) {
-            System.out.println("Fehler bei der Programmausführung");
+            Commons.fehlerAusgabe(Commons.ErrorType.ProgrammFehler);
         }
     }
 }
