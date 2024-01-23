@@ -1,0 +1,7 @@
+package org.hbrs.se1.ws23.uebung9;
+
+public interface Document {
+    int size();
+    int getId();
+    void setId(int id);
+}
