@@ -1,6 +1,6 @@
 package org.hbrs.se1.ws23.uebung9;
 
-import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 
 public class TextDocument extends CoreDocument {
 
@@ -30,7 +30,7 @@ public class TextDocument extends CoreDocument {
     }
 
     @Override
-    public int size() {
+    public int byteSize() {
         try {
             return content.getBytes(encoding.toString()).length;
         } catch (java.io.UnsupportedEncodingException e) {
