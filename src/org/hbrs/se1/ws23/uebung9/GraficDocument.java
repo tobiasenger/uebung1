@@ -1,7 +1,5 @@
 package org.hbrs.se1.ws23.uebung9;
 
-import java.util.Iterator;
-
 public class GraficDocument extends CoreDocument {
 
     String url;
